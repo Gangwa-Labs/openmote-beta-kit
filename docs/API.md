@@ -15,9 +15,9 @@ OpenMote mote;
 ## Setup
 
 ### `bool begin(bool initSensors = true)`
-Configures every pin and brings up the I2C sensors. Returns `true` if everything
-came up; on `false`, check `imuAvailable()` / `magAvailable()` — buttons, LEDs,
-rumble and battery work regardless.
+Configures every pin and brings up the IMU. Returns `true` if everything came up;
+a `false` means the IMU did not answer — buttons, LEDs, rumble and battery all
+work regardless.
 
 Pass `false` to skip sensor init and leave the I2C bus alone.
 
@@ -122,43 +122,35 @@ the board is charging. D11 is the only charge indicator.
 
 ---
 
-## Motion sensors
+## Motion sensor
 
 ```cpp
 struct IMUData { float ax, ay, az;   // g
                  float gx, gy, gz;   // degrees/second
                  bool  valid; };
-
-struct MagData { float mx, my, mz;   // microtesla
-                 bool  valid; };
 ```
 
 | Method | Returns |
 |--------|---------|
-| `imuAvailable()` / `magAvailable()` | did the chip answer during `begin()` |
+| `imuAvailable()` | did the chip answer during `begin()` |
 | `readIMU()` | accelerometer + gyroscope sample |
-| `readMag()` | magnetic field, rotated into the IMU's axis frame |
-| `readMagRaw()` | magnetic field in the magnetometer's own frame |
 | `readTemperature()` | IMU die temperature, °C (±2) |
 | `pitch()` / `roll()` | degrees, from the accelerometer |
-| `headingDegrees()` | tilt-compensated compass heading, 0–360 |
-| `setMagCalibration(x, y, z)` | hard-iron offsets, in raw-frame µT |
 | `setAccelRange(r)` | `ACCEL_2G` (default), `_4G`, `_8G`, `_16G` |
 | `setGyroRange(r)` | `GYRO_245DPS`, `_500DPS`, `_1000DPS` (default), `_2000DPS` |
 
 Always check `.valid` — a `false` means the I2C read failed, not that the board
 is stationary.
 
-**Why two magnetometer functions.** The MMC5603NJ is physically rotated relative
-to the IMU on the PCB. `readMag()` swaps X/Y and inverts Z so the two sensors
-agree with each other, which is what any fusion algorithm needs. `readMagRaw()`
-gives you the chip's own frame — use it for calibration, since that is the frame
-`setMagCalibration()` expects.
+**The gyroscope needs zeroing.** Every gyro has a small constant offset, so
+integrating one to track rotation drifts steadily. Sample the offset while the
+board is stationary and subtract it from later readings — example 04 has a
+working routine.
 
-**Calibrate before trusting the heading.** The speaker magnet, the battery and
-any steel nearby all bend the field. Example 04 has a working routine: spin the
-board through every orientation, record min and max per axis, and feed
-`(min+max)/2` to `setMagCalibration()`.
+**There is no magnetometer.** `pitch()` and `roll()` come from gravity and are
+absolute, but heading (yaw) has no absolute reference on this board. Integrating
+`gz` gives you relative turn that drifts over tens of seconds; if you need a true
+compass, add one over the J15 expansion connector.
 
 ---
 
@@ -173,8 +165,8 @@ For the J15 expansion connector, or any register the library doesn't wrap.
 | `i2cDetect(addr)` | does anything ACK at this address |
 | `i2cScan(Print& = Serial)` | print every device found; returns the count |
 
-The bus is already running at 400 kHz after `begin()`. Addresses `0x6A` (IMU)
-and `0x30` (magnetometer) are taken.
+The bus is already running at 400 kHz after `begin()`. Address `0x6A` (IMU) is
+taken; everything else is free for whatever you plug into J15.
 
 ---
 

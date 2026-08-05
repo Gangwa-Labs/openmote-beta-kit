@@ -96,22 +96,31 @@ Drive `OM_PIN_AMP_SD` (GPIO21) **HIGH** before streaming, and give it time — t
 node settles slowly through 680 kΩ. If it still won't play, check how JP1 is set
 on your board and measure the SD pin voltage with a meter while GPIO21 is high.
 
-## Magnetometer or IMU not found
+## IMU not found
 
-Run `mote.i2cScan()`. You should see `0x30` (magnetometer) and `0x6A` (IMU).
+Run `mote.i2cScan()`. You should see `0x6A` (the LSM6DS3TR-C).
 
 - Nothing at all → the bus is dead. Check the pull-ups and that nothing plugged
   into J15 is shorting SDA/SCL.
-- One missing → likely a solder joint on that chip. The MMC5603NJ is a 0.8 mm
-  WLP-4; it is the usual suspect.
+- Bus alive but no `0x6A` → likely a solder joint on the IMU itself.
 
-## Compass heading is wrong or drifts
+> Some early Gen 3.3 boards also answer at `0x30`. That is an MMC5603NJ
+> magnetometer which has been **dropped from the final hardware**, so the library
+> does not use it and nothing here documents it. Ignore it.
 
-Calibrate it — example 04 has a routine. Uncalibrated, the speaker magnet and the
-battery dominate the reading.
+## Rotation drifts when I integrate the gyroscope
 
-Then check you are using `readMag()` (rotated into the IMU's frame) rather than
-`readMagRaw()` (the chip's own frame) for anything involving both sensors.
+Two separate causes, and you probably have both:
+
+1. **Bias.** Zero the gyro while the board is stationary and subtract that offset
+   — example 04 shows the routine.
+2. **Nothing corrects yaw.** There is no magnetometer, so heading has no absolute
+   reference and integrated drift accumulates with nothing to pull it back. Pitch
+   and roll are fine, because gravity is an absolute reference and `pitch()` /
+   `roll()` use it directly.
+
+If you need a true compass heading, add a magnetometer over the J15 expansion
+connector.
 
 ## Battery reads 0 V, or a wildly wrong voltage
 

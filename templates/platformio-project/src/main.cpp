@@ -15,10 +15,9 @@ void setup() {
     Serial.println("\nOpenMote Gen 3.3 starting up");
 
     if (!mote.begin()) {
-        Serial.println("Warning: not all sensors came up.");
+        Serial.println("Warning: the IMU did not come up.");
     }
     Serial.printf("  IMU:          %s\n", mote.imuAvailable() ? "ok" : "MISSING");
-    Serial.printf("  Magnetometer: %s\n", mote.magAvailable() ? "ok" : "MISSING");
     Serial.printf("  Battery:      %.2f V (%u%%)\n",
                   mote.batteryVolts(), mote.batteryPercent());
 

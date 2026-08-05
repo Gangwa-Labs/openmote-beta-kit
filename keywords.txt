@@ -9,7 +9,6 @@
 OpenMote	KEYWORD1
 OpenMoteIR	KEYWORD1
 IMUData	KEYWORD1
-MagData	KEYWORD1
 OpenMoteButton	KEYWORD1
 OpenMoteAccelRange	KEYWORD1
 OpenMoteGyroRange	KEYWORD1
@@ -45,15 +44,10 @@ batteryPercent	KEYWORD2
 batteryValid	KEYWORD2
 setBatteryCalibration	KEYWORD2
 imuAvailable	KEYWORD2
-magAvailable	KEYWORD2
 readIMU	KEYWORD2
-readMag	KEYWORD2
-readMagRaw	KEYWORD2
 readTemperature	KEYWORD2
 pitch	KEYWORD2
 roll	KEYWORD2
-headingDegrees	KEYWORD2
-setMagCalibration	KEYWORD2
 setAccelRange	KEYWORD2
 setGyroRange	KEYWORD2
 i2cWrite	KEYWORD2

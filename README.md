@@ -5,8 +5,8 @@ hardware, the full pin map and component list, and board definitions for the
 Arduino IDE and PlatformIO.
 
 The OpenMote is an ESP32-S3 handheld controller — twelve buttons, four player
-LEDs, a rumble motor, a 6-axis IMU, a magnetometer, a speaker, a microphone,
-infrared in and out, and a LiPo battery.
+LEDs, a rumble motor, a 6-axis IMU, a speaker, a microphone, infrared in and
+out, and a LiPo battery.
 
 ---
 
@@ -76,7 +76,6 @@ void loop() {
 | **Rumble** | PWM strength control and non-blocking timed buzzes |
 | **Battery** | Voltage and percentage, with the ADC2/Wi-Fi conflict handled |
 | **IMU** | LSM6DS3TR-C accelerometer + gyroscope, pitch/roll, temperature |
-| **Magnetometer** | MMC5603NJ, axis-aligned to the IMU, tilt-compensated heading |
 | **Infrared** | NEC send and receive, plus raw timing capture and replay |
 | **I2C** | Bus scanner and register access for the J15 expansion port |
 
@@ -110,7 +109,7 @@ Under **File → Examples → OpenMote** once installed.
 | `01_HelloOpenMote` | Start here — what's connected, and button events |
 | `02_ButtonsAndLEDs` | Edge vs level vs hold detection; LED helpers |
 | `03_RumbleAndBattery` | Haptics and power monitoring |
-| `04_MotionAndCompass` | IMU, magnetometer, and a compass calibration routine |
+| `04_Motion` | Accelerometer, gyroscope, tilt angles, gyro bias calibration |
 | `05_InfraredRemote` | Learn a code from any remote, then replay it |
 | `06_BoardSelfTest` | Bring-up test for a new board — **run this first** |
 
@@ -160,7 +159,7 @@ it. It's harmless, and fixed in Gen 3.4.
 | Wireless | Wi-Fi 802.11 b/g/n, Bluetooth 5 LE |
 | Input | 12 buttons (D-pad, A/B, 1/2, +/−, Home, Power) |
 | Output | 4 player LEDs, rumble motor, speaker |
-| Sensors | LSM6DS3TR-C 6-axis IMU, MMC5603NJ magnetometer |
+| Sensors | LSM6DS3TR-C 6-axis IMU (accelerometer + gyroscope) |
 | Audio | MAX98357A I2S amp, PDM MEMS microphone |
 | Infrared | 38 kHz receiver, 40° transmit LED |
 | Power | USB-C charging, 1S LiPo, voltage monitoring |

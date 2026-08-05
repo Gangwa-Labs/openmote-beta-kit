@@ -29,8 +29,8 @@ The ESP32-S3 has no GPIO 22–25; they are omitted rather than missing.
 | 12 | MIC_CLK | PDM microphone clock | ADC2_CH1 | |
 | 13 | −BUTT | Minus button | ADC2_CH2 | |
 | 14 | BATT_LEVEL | Battery voltage tap | ADC2_CH3 | ⚠ ADC2 — unusable while Wi-Fi is on |
-| 15 | SCL | I²C clock | ADC2_CH4 | shared: IMU, magnetometer, J15 |
-| 16 | SDA | I²C data | ADC2_CH5 | shared: IMU, magnetometer, J15 |
+| 15 | SCL | I²C clock | ADC2_CH4 | shared: IMU, J15 |
+| 16 | SDA | I²C data | ADC2_CH5 | shared: IMU, J15 |
 | 17 | HOME_BUTT | Home button | ADC2_CH6 | |
 | 18 | 1_BUTT | Button 1 | ADC2_CH7 | |
 | 19 | USB_D− | Native USB D− (J5) | ADC2_CH8 | do not repurpose |
@@ -55,7 +55,7 @@ The ESP32-S3 has no GPIO 22–25; they are omitted rather than missing.
 ## By function
 
 ### I²C bus
-Shared by the IMU, the magnetometer, and the J15 expansion connector.
+Shared by the IMU and the J15 expansion connector.
 Pull-ups are on the board already.
 
 | Signal | GPIO |
@@ -66,7 +66,6 @@ Pull-ups are on the board already.
 | Device | Address | ID register | Expected |
 |--------|--------:|-------------|----------|
 | LSM6DS3TR-C IMU | `0x6A` | `WHO_AM_I` (0x0F) | `0x6A` |
-| MMC5603NJ magnetometer | `0x30` | Product ID (0x39) | `0x10` |
 
 ### Buttons
 All twelve are active **low** and need `INPUT_PULLUP`.

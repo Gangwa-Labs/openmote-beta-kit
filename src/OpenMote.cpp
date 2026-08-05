@@ -47,20 +47,6 @@ static const uint8_t kLEDPins[4] = {
 #define REG_IMU_OUTX_L_G    0x22   // gyro X..Z then accel X..Z, 12 bytes
 #define IMU_WHOAMI_VALUE    0x6A
 
-// ---- MMC5603NJ registers ----
-#define REG_MAG_XOUT0       0x00
-#define REG_MAG_ODR         0x1A
-#define REG_MAG_CTRL0       0x1B
-#define REG_MAG_CTRL1       0x1C
-#define REG_MAG_CTRL2       0x1D
-#define REG_MAG_PRODUCT_ID  0x39
-#define MAG_PRODUCT_ID_VAL  0x10
-
-// 16-bit mode: 1024 counts per Gauss, zero field at mid-scale (32768).
-// 1 Gauss = 100 uT, so one count is 100/1024 uT.
-#define MAG_UT_PER_COUNT    (100.0f / 1024.0f)
-#define MAG_ZERO_COUNT      32768.0f
-
 // ===========================================================================
 
 OpenMote::OpenMote() {}
@@ -106,8 +92,7 @@ bool OpenMote::begin(bool initSensors) {
     delay(10);
 
     _imuOk = initIMU();
-    _magOk = initMag();
-    return _imuOk && _magOk;
+    return _imuOk;
 }
 
 void OpenMote::update() {
@@ -325,7 +310,6 @@ uint8_t OpenMote::i2cScan(Print &out) {
         if (i2cDetect(addr)) {
             out.printf("  0x%02X", addr);
             if (addr == OM_I2C_ADDR_IMU) out.print(F("  <- LSM6DS3TR-C IMU"));
-            if (addr == OM_I2C_ADDR_MAG) out.print(F("  <- MMC5603NJ magnetometer"));
             out.println();
             found++;
         }
@@ -431,89 +415,4 @@ float OpenMote::roll() {
     IMUData d = readIMU();
     if (!d.valid) return NAN;
     return atan2f(d.ay, d.az) * 180.0f / (float)M_PI;
-}
-
-// ---------------------------------------------------------------------------
-// MMC5603NJ magnetometer
-// ---------------------------------------------------------------------------
-
-bool OpenMote::initMag() {
-    uint8_t id = 0;
-    if (!i2cRead(OM_I2C_ADDR_MAG, REG_MAG_PRODUCT_ID, &id, 1)) return false;
-    if (id != MAG_PRODUCT_ID_VAL) return false;
-
-    i2cWrite(OM_I2C_ADDR_MAG, REG_MAG_CTRL1, 0x80);   // software reset
-    delay(20);
-    i2cWrite(OM_I2C_ADDR_MAG, REG_MAG_ODR, 100);      // 100 Hz
-    // Cmm_freq_en (bit7) computes the continuous-mode timing; Auto_SR_en (bit5)
-    // runs a periodic set/reset, which is what cancels this sensor's offset drift.
-    i2cWrite(OM_I2C_ADDR_MAG, REG_MAG_CTRL0, 0xA0);
-    i2cWrite(OM_I2C_ADDR_MAG, REG_MAG_CTRL2, 0x10);   // Cmm_en: start converting
-    delay(20);
-    return true;
-}
-
-MagData OpenMote::readMagRaw() {
-    MagData m;
-    if (!_magOk) return m;
-
-    uint8_t b[6];
-    if (!i2cRead(OM_I2C_ADDR_MAG, REG_MAG_XOUT0, b, 6)) return m;
-
-    // Big-endian, unsigned, zero field at mid-scale.
-    uint16_t rx = (uint16_t)((b[0] << 8) | b[1]);
-    uint16_t ry = (uint16_t)((b[2] << 8) | b[3]);
-    uint16_t rz = (uint16_t)((b[4] << 8) | b[5]);
-
-    m.mx = (rx - MAG_ZERO_COUNT) * MAG_UT_PER_COUNT;
-    m.my = (ry - MAG_ZERO_COUNT) * MAG_UT_PER_COUNT;
-    m.mz = (rz - MAG_ZERO_COUNT) * MAG_UT_PER_COUNT;
-    m.valid = true;
-    return m;
-}
-
-MagData OpenMote::readMag() {
-    MagData raw = readMagRaw();
-    if (!raw.valid) return raw;
-
-    float cx = raw.mx - _magOffX;
-    float cy = raw.my - _magOffY;
-    float cz = raw.mz - _magOffZ;
-
-    // The magnetometer is rotated relative to the IMU on the PCB. Swapping X/Y
-    // and inverting Z lines the two sensors up — verified on real Gen 3.3 boards.
-    MagData m;
-    m.mx = cy;
-    m.my = cx;
-    m.mz = -cz;
-    m.valid = true;
-    return m;
-}
-
-void OpenMote::setMagCalibration(float offX, float offY, float offZ) {
-    _magOffX = offX;
-    _magOffY = offY;
-    _magOffZ = offZ;
-}
-
-float OpenMote::headingDegrees() {
-    if (!_magOk || !_imuOk) return NAN;
-
-    IMUData a = readIMU();
-    MagData m = readMag();
-    if (!a.valid || !m.valid) return NAN;
-
-    float rollRad  = atan2f(a.ay, a.az);
-    float pitchRad = atan2f(-a.ax, sqrtf(a.ay * a.ay + a.az * a.az));
-
-    float sr = sinf(rollRad),  cr = cosf(rollRad);
-    float sp = sinf(pitchRad), cp = cosf(pitchRad);
-
-    // Project the field onto the horizontal plane so tilting doesn't swing it.
-    float xh = m.mx * cp + m.mz * sp;
-    float yh = m.mx * sr * sp + m.my * cr - m.mz * sr * cp;
-
-    float heading = atan2f(-yh, xh) * 180.0f / (float)M_PI;
-    if (heading < 0) heading += 360.0f;
-    return heading;
 }

@@ -23,7 +23,6 @@ void report(const char *what, bool ok, const char *detail = "") {
 void testSensors() {
     Serial.println("\nSensors");
     report("LSM6DS3TR-C IMU", mote.imuAvailable(), "I2C 0x6A");
-    report("MMC5603NJ mag",   mote.magAvailable(), "I2C 0x30");
 
     if (mote.imuAvailable()) {
         IMUData d = mote.readIMU();
@@ -36,14 +35,10 @@ void testSensors() {
         float t = mote.readTemperature();
         snprintf(buf, sizeof(buf), "%.1f C", t);
         report("IMU temperature", !isnan(t) && t > 0 && t < 60, buf);
-    }
 
-    if (mote.magAvailable()) {
-        MagData m = mote.readMag();
-        float f = sqrtf(m.mx * m.mx + m.my * m.my + m.mz * m.mz);
-        char buf[48];
-        snprintf(buf, sizeof(buf), "%.1f uT total (Earth is 25-65)", f);
-        report("magnetometer field", m.valid && f > 10 && f < 200, buf);
+        snprintf(buf, sizeof(buf), "%+.1f deg pitch, %+.1f deg roll",
+                 mote.pitch(), mote.roll());
+        report("tilt angles", !isnan(mote.pitch()), buf);
     }
 }
 

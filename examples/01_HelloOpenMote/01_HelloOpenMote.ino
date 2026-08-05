@@ -21,7 +21,6 @@ void setup() {
     mote.begin();
 
     Serial.printf("IMU (LSM6DS3TR-C) : %s\n", mote.imuAvailable() ? "found" : "NOT FOUND");
-    Serial.printf("Mag (MMC5603NJ)   : %s\n", mote.magAvailable() ? "found" : "NOT FOUND");
     Serial.printf("Battery           : %.2f V (%u%%)\n",
                   mote.batteryVolts(), mote.batteryPercent());
     Serial.println();

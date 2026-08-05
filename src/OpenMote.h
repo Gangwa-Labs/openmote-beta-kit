@@ -2,8 +2,7 @@
  * OpenMote.h — common driver for the OpenMote Gen 3.3 board
  *
  * Covers: 12 buttons (debounced, with edge + hold detection), 4 player LEDs,
- * the rumble motor, battery voltage, and the two I2C motion sensors
- * (LSM6DS3TR-C IMU + MMC5603NJ magnetometer).
+ * the rumble motor, battery voltage, and the LSM6DS3TR-C inertial sensor.
  *
  * Audio (I2S speaker / PDM mic) is deliberately NOT in this library — see
  * docs/TROUBLESHOOTING.md for why, and the demo firmware projects for examples.
@@ -43,12 +42,6 @@ struct IMUData {
     bool  valid = false;            ///< false if the I2C read failed
 };
 
-/** Magnetic field sample from the MMC5603NJ. */
-struct MagData {
-    float mx = 0, my = 0, mz = 0;   ///< microtesla (uT); Earth's field is ~25-65 uT
-    bool  valid = false;            ///< false if the I2C read failed
-};
-
 /** Accelerometer full-scale range. Larger range = less resolution. */
 enum OpenMoteAccelRange : uint8_t { ACCEL_2G = 0, ACCEL_4G, ACCEL_8G, ACCEL_16G };
 
@@ -64,13 +57,13 @@ public:
     // -- Setup ------------------------------------------------------------
 
     /**
-     * Configure every pin on the board and bring up the I2C sensors.
+     * Configure every pin on the board and bring up the I2C sensor.
      *
-     * @param initSensors  false to skip IMU/magnetometer setup (saves ~50 ms
-     *                     and leaves the I2C bus untouched).
+     * @param initSensors  false to skip IMU setup (saves ~50 ms and leaves the
+     *                     I2C bus untouched).
      * @return true if everything requested came up. If it returns false, check
-     *         imuAvailable() and magAvailable() to see what is missing — the
-     *         buttons, LEDs, rumble and battery still work regardless.
+     *         imuAvailable() — the buttons, LEDs, rumble and battery still work
+     *         regardless.
      */
     bool begin(bool initSensors = true);
 
@@ -178,25 +171,13 @@ public:
      */
     void setBatteryCalibration(float multiplier) { _battMultiplier = multiplier; }
 
-    // -- Motion sensors ---------------------------------------------------
+    // -- Motion sensor ----------------------------------------------------
 
     /** True if the LSM6DS3TR-C answered on the bus during begin(). */
     bool imuAvailable() const { return _imuOk; }
 
-    /** True if the MMC5603NJ answered on the bus during begin(). */
-    bool magAvailable() const { return _magOk; }
-
     /** One accelerometer + gyroscope sample. Check .valid before using it. */
     IMUData readIMU();
-
-    /**
-     * One magnetometer sample, rotated into the same axis frame as the IMU
-     * (X and Y swapped, Z inverted) so accel/gyro/mag agree with each other.
-     */
-    MagData readMag();
-
-    /** Magnetometer in the chip's own axis frame, without the rotation above. */
-    MagData readMagRaw();
 
     /** Die temperature from the IMU, in degrees C. Roughly +/- 2 C. */
     float readTemperature();
@@ -206,20 +187,6 @@ public:
 
     /** Tilt angle around the board's Y axis, -90..90 degrees. */
     float roll();
-
-    /**
-     * Tilt-compensated compass heading, 0-360 degrees (0 = magnetic north).
-     * Returns NAN if the magnetometer is missing. Nearby magnets, the speaker
-     * and the battery all skew this — calibrate before trusting it.
-     */
-    float headingDegrees();
-
-    /**
-     * Hard-iron offsets subtracted from the raw magnetometer, in uT.
-     * Get them by spinning the board through every orientation, recording the
-     * min and max on each axis, and passing (min+max)/2.
-     */
-    void setMagCalibration(float offX, float offY, float offZ);
 
     /** Change the accelerometer full-scale range. Default ACCEL_2G. */
     bool setAccelRange(OpenMoteAccelRange range);
@@ -243,7 +210,6 @@ public:
 
 private:
     bool initIMU();
-    bool initMag();
 
     // Buttons
     uint16_t _stable      = 0xFFFF;  // 1 bit per button, 1 = released (pin high)
@@ -265,12 +231,10 @@ private:
     float _battVolts      = 0.0f;
     bool  _battValid      = false;
 
-    // Sensors
+    // Sensor
     bool  _imuOk = false;
-    bool  _magOk = false;
     float _accelScale = 0.061f / 1000.0f;   // g per LSB  (+/-2 g default)
     float _gyroScale  = 35.0f / 1000.0f;    // dps per LSB (1000 dps default)
-    float _magOffX = 0, _magOffY = 0, _magOffZ = 0;
 };
 
 #endif // OPENMOTE_H

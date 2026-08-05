@@ -1,8 +1,8 @@
 {
   "name": "OpenMote",
   "version": "1.0.0",
-  "description": "Board support library for the OpenMote Gen 3.3 handheld controller: debounced buttons, player LEDs, rumble motor, battery monitoring, LSM6DS3TR-C IMU, MMC5603NJ magnetometer, and infrared send/receive.",
-  "keywords": ["openmote", "esp32-s3", "imu", "magnetometer", "infrared", "controller"],
+  "description": "Board support library for the OpenMote Gen 3.3 handheld controller: debounced buttons, player LEDs, rumble motor, battery monitoring, LSM6DS3TR-C IMU, and infrared send/receive.",
+  "keywords": ["openmote", "esp32-s3", "imu", "infrared", "controller"],
   "repository": {
     "type": "git",
     "url": "https://github.com/Gangwa-Labs/openmote-beta-kit.git"

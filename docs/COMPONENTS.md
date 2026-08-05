@@ -12,7 +12,6 @@ used for assembly.
 |-----|------|---------|----------|------|
 | U8 | **ESP32-S3-WROOM-1-N16R8** | Module | Main MCU: dual-core Xtensa LX7, Wi-Fi b/g/n, Bluetooth 5 LE, 16 MB flash, 8 MB Octal PSRAM, native USB | C2913202 |
 | U5 | **LSM6DS3TR-C** | LGA-14 | 6-axis IMU (3-axis accel + 3-axis gyro), I²C `0x6A` | C967633 |
-| U9 | **MMC5603NJ** | WLP-4 | 3-axis AMR magnetometer, ±30 Gauss, I²C `0x30` | C404328 |
 | U2 | **MAX98357AETE+T** | TQFN-16 | I²S class-D mono audio amplifier, ~3.2 W into 4 Ω | C910544 |
 | U1 | **LMD4030T261-OA1** | MEMS | PDM MEMS microphone, ~−26 dBFS, ~58 dB(A) SNR | C7587900 |
 | U4 | **IRM-56384** | MOLD-3pin | 38 kHz IR receiver module, active-low output | C72048 |
@@ -89,13 +88,6 @@ used for assembly.
 - Output data rate up to 6.66 kHz. The library defaults to 416 Hz.
 - Two interrupt lines wired out (GPIO48, GPIO47) for wake-on-motion.
 
-### MMC5603NJ magnetometer
-- ±30 Gauss range; 16-bit mode gives 1024 counts per Gauss (≈ 0.098 µT/count).
-- Needs a periodic SET/RESET to cancel offset drift — the library enables the
-  automatic version at init.
-- Physically rotated relative to the IMU: X and Y swap and Z inverts to line the
-  two sensors up. `OpenMote::readMag()` does this for you.
-
 ### MAX98357A amplifier
 - 8 kHz–96 kHz sample rates, 16/24/32-bit I²S.
 - One speaker on the board, so the output mode is the (L+R)/2 mono mix.
@@ -116,7 +108,6 @@ used for assembly.
 
 - [ESP32-S3-WROOM-1](https://www.espressif.com/sites/default/files/documentation/esp32-s3-wroom-1_wroom-1u_datasheet_en.pdf)
 - [LSM6DS3TR-C](https://www.st.com/resource/en/datasheet/lsm6ds3tr-c.pdf)
-- [MMC5603NJ](https://www.memsic.com/Public/Uploads/uploadfile/files/20220522/MMC5603NJDatasheetRev.B.pdf)
 - [MAX98357A](http://datasheets.maximintegrated.com/en/ds/MAX98357A-MAX98357B.pdf)
 - [XC6210 LDO](https://www.torexsemi.com/file/xc6210/XC6210.pdf)
 - [MMBT2222A](https://assets.nexperia.com/documents/data-sheet/MMBT2222A.pdf)

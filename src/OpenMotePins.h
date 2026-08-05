@@ -16,7 +16,7 @@
 #include <stdint.h>
 
 // ---------------------------------------------------------------------------
-// I2C bus — shared by the IMU, the magnetometer, and the J15 expansion port
+// I2C bus — shared by the IMU and the J15 expansion port
 // ---------------------------------------------------------------------------
 #define OM_PIN_SCL          15
 #define OM_PIN_SDA          16
@@ -100,7 +100,6 @@
 // I2C device addresses
 // ---------------------------------------------------------------------------
 #define OM_I2C_ADDR_IMU     0x6A  // LSM6DS3TR-C
-#define OM_I2C_ADDR_MAG     0x30  // MMC5603NJ
 
 // ---------------------------------------------------------------------------
 // DO NOT USE — consumed internally by flash and Octal PSRAM on the N16R8 module
