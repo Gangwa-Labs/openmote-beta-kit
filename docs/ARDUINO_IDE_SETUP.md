@@ -46,7 +46,7 @@ The four marked ⭐ are the ones that will break your board if they are wrong.
 | ⭐ **USB CDC On Boot** | **Enabled** | `Serial` output goes over the USB-C cable. Without this you get no serial monitor at all, because the UART pins are the D-pad. |
 | ⭐ **USB Mode** | **Hardware CDC and JTAG** | Native USB. Also what makes the board reset itself for uploads. |
 | Partition Scheme | **16M Flash (3MB APP/9.9MB FATFS)** | Plenty of room for a sketch plus a filesystem. |
-| Flash Mode | **QIO 80MHz** | |
+| ⭐ **Flash Mode** | **QIO 80MHz** | Not cosmetic — see the warning below. Do **not** pick "OPI 80MHz". |
 | CPU Frequency | **240MHz (WiFi)** | |
 | Upload Speed | **921600** | Drop to 460800 or 115200 if uploads fail partway. |
 | Arduino Runs On | Core 1 | |
@@ -56,6 +56,19 @@ The four marked ⭐ are the ones that will break your board if they are wrong.
 | JTAG Adapter | Integrated USB JTAG | Leave Disabled unless you are actually debugging. |
 | USB Firmware MSC On Boot | Disabled | |
 | USB DFU On Boot | Disabled | |
+
+> ### ⚠ Do not select "OPI 80MHz" as the Flash Mode
+>
+> It looks like the matching choice once you have set PSRAM to OPI. It is not.
+>
+> The Arduino core derives its memory configuration from **both** menus:
+> `memory_type = {Flash Mode} _ {PSRAM type}`. The OpenMote's N16R8 module is
+> 16 MB **quad** flash plus 8 MB **octal** PSRAM, so the correct combination is
+> `qio` + `opi` = **`qio_opi`** — which is what "QIO 80MHz" + "OPI PSRAM" gives.
+>
+> Selecting "OPI 80MHz" produces `opi_opi`, telling the bootloader the *flash* is
+> octal as well. The board will not boot. The "OPI" in the Flash Mode menu refers
+> to the flash chip; the "OPI" you want is the one in the PSRAM menu.
 
 > **Using an OpenMote for USB HID** (keyboard, mouse, gamepad — see the air mouse
 > firmware)? Change **USB Mode** to **USB-OTG (TinyUSB)**. You lose the serial
