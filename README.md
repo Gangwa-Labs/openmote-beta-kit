@@ -97,6 +97,7 @@ working implementations to copy.
 | **[PLATFORMIO_SETUP.md](docs/PLATFORMIO_SETUP.md)** | Using the `openmote_gen3` board definition |
 | **[FLASHING.md](docs/FLASHING.md)** | Manual download mode, the Windows upload hang, recovery |
 | **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** | Symptom-first fixes |
+| **[demos/README.md](demos/README.md)** | The four demo applications |
 
 ---
 
@@ -115,6 +116,20 @@ Under **File → Examples → OpenMote** once installed.
 
 ---
 
+## Demos
+
+Complete, flashable applications rather than teaching sketches. Each is its own
+PlatformIO project under [`demos/`](demos/).
+
+| | |
+|---|---|
+| [`ir_learn`](demos/ir_learn/) | **Learning universal remote.** Hold A+B, capture a code from any remote, bind it to a button. Mappings persist. Built on the library. |
+| [`airmouse`](demos/airmouse/) | **Absolute-pointing USB mouse.** Aim the controller and the cursor follows. HID + CDC composite. |
+| [`tv_remote`](demos/tv_remote/) | **BLE remote for Fire TV**, plus IR for TV power. |
+| [`usb_microphone`](demos/usb_microphone/) | **USB audio capture device.** Pure ESP-IDF — build with `idf.py`, not PlatformIO. |
+
+---
+
 ## Repository layout
 
 ```
@@ -123,7 +138,12 @@ openmote-beta-kit/
 │   ├── OpenMote.h/.cpp        buttons, LEDs, rumble, battery, sensors
 │   ├── OpenMoteIR.h/.cpp      infrared send/receive
 │   └── OpenMotePins.h         pin map — usable on its own
-├── examples/                  six worked examples
+├── examples/                  six small teaching sketches
+├── demos/                     four complete applications
+│   ├── ir_learn/              learning universal remote (uses the library)
+│   ├── airmouse/              absolute-pointing USB HID mouse
+│   ├── tv_remote/             BLE remote for Fire TV + IR power
+│   └── usb_microphone/        USB audio capture device (ESP-IDF)
 ├── docs/                      pinout, components, setup, troubleshooting
 ├── boards/
 │   └── openmote_gen3.json     PlatformIO board definition

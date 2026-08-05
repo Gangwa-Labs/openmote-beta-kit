@@ -1,0 +1,7 @@
+# OpenMote Gen 3.3 air mouse — 16 MB layout. No filesystem needed; calibration
+# lives in NVS. Two OTA app slots leave plenty of headroom.
+# Name,   Type, SubType, Offset,   Size
+nvs,      data, nvs,     0x9000,   0x5000,
+otadata,  data, ota,     0xe000,   0x2000,
+app0,     app,  ota_0,   0x10000,  0x300000,
+app1,     app,  ota_1,   0x310000, 0x300000,

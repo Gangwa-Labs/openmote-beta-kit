@@ -1,0 +1,6 @@
+## Managed components pulled in by the ESP-IDF Component Manager.
+## usb_device_uac is a turnkey USB Audio Class driver: it builds all UAC
+## descriptors/endpoints and calls us back to fill the mic buffer. It pulls
+## in the tinyusb component itself.
+dependencies:
+  espressif/usb_device_uac: "^1.3.0"

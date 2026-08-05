@@ -1,0 +1,29 @@
+# ============================================================
+# OpenMote Gen 3.3 USB Microphone — sdkconfig overrides (ESP-IDF 5.5)
+# ============================================================
+
+# Gen 3.3 module is ESP32-S3-WROOM-1-N16R8 → 16 MB flash (Gen 3.2 build used
+# 8 MB). The partition table only runs to 4 MB, so it fits either way.
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHSIZE="16MB"
+
+# The N16R8 also has 8 MB Octal PSRAM. This firmware doesn't need it (the mic
+# ring buffer is a few KB of internal RAM), so it stays off. To use it, enable:
+#   CONFIG_SPIRAM=y
+#   CONFIG_SPIRAM_MODE_OCT=y
+# Either way GPIO33-37 belong to PSRAM on this module — don't assign them.
+
+# Console on UART0 (GPIO43/44) so the native USB port / PHY is free for USB-OTG
+# (UAC). Progress is shown on the LEDs instead since no UART bridge is attached.
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
+
+# ---- usb_device_uac: microphone only, mono 16-bit @ 16 kHz ----
+# Interfaces are enabled by channel count (0 disables). Sample rate and bit
+# resolution are shared across mic/speaker in this component.
+CONFIG_UAC_MIC_CHANNEL_NUM=1
+CONFIG_UAC_SPEAKER_CHANNEL_NUM=0
+CONFIG_UAC_SAMPLE_RATE=16000
+CONFIG_UAC_BIT_RESOLUTION_16=y
+
+# FreeRTOS tick
+CONFIG_FREERTOS_HZ=1000

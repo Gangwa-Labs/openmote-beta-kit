@@ -18,3 +18,11 @@ build/
 *~
 .DS_Store
 Thumbs.db
+
+# ESP-IDF
+managed_components/
+sdkconfig
+sdkconfig.old
+sdkconfig.*
+!sdkconfig.defaults
+dependencies.lock.bak
