@@ -79,6 +79,11 @@ ESP32-S3 force-pulls-up in download mode; against the 10 kΩ gate pulldown (R20)
 that puts ~0.6 V on the SI2302's gate, past its ~0.45 V threshold. No firmware is
 running at that point, so nothing can hold the pin low.
 
+**Still buzzing after the upload finished?** The board is still in the
+bootloader — that is normal if you entered download mode by hand, since nothing
+resets it automatically. **Tap the Reset button on the back** to boot your
+sketch, and the buzzing stops.
+
 Gen 3.4 changes R20 to 1 kΩ, which drops the gate to ~0.07 V.
 
 ## No audio from the speaker

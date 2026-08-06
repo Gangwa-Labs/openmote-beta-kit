@@ -29,8 +29,13 @@ your port selection.
 
 **The rumble motor buzzes while flashing.** Expected on Gen 3.3. GPIO39 is MTCK,
 which the chip force-pulls-up in download mode; that partially turns on the
-motor's MOSFET. No firmware is running, so nothing can prevent it. It stops as
-soon as the board boots. Fixed in Gen 3.4 by changing R20 from 10 kΩ to 1 kΩ.
+motor's MOSFET. No firmware is running, so nothing can prevent it.
+
+It stops as soon as the board boots — so if you entered download mode by hand,
+it will keep buzzing after the upload finishes, because the board is still
+sitting in the bootloader. **Tap the Reset button on the back and it stops.**
+
+Fixed in Gen 3.4 by changing R20 from 10 kΩ to 1 kΩ.
 
 **No serial output after a successful upload.** Almost always
 **USB CDC On Boot** set to Disabled (Arduino IDE), or a missing
