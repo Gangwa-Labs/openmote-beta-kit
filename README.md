@@ -16,7 +16,7 @@ out, and a LiPo battery.
 
 ## Quick start
 
-**Arduino IDE** — five minutes, nothing custom to install.
+**Arduino IDE** — about five minutes.
 
 1. Add the ESP32 boards URL and install **esp32 by Espressif Systems**.
 2. Get the library: **Code → Download ZIP** on

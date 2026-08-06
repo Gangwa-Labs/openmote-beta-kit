@@ -57,8 +57,12 @@ sketchbook's `hardware` folder:
 Restart the IDE, then **Tools → Board → OpenMote → OpenMote Gen 3.3**.
 
 That is the whole configuration step — flash size, PSRAM mode, USB CDC and the
-partition scheme are all baked in. Switch **USB Mode** to *USB-OTG (TinyUSB)*
-only when building a HID sketch such as the AirMouse example.
+partition scheme are all baked in. Do not go hunting through the Tools menu
+afterwards; the settings in the manual table below are already applied.
+
+**The one exception:** for a USB HID sketch (keyboard, mouse, gamepad — the
+AirMouse example), set **Tools → USB Mode → USB-OTG (TinyUSB)**. It will not
+compile otherwise. Set it back to *Hardware CDC and JTAG* for everything else.
 
 The folder depth matters: you should end up with
 `Documents\Arduino\hardware\openmote\esp32\boards.txt`. If the board never
@@ -114,12 +118,22 @@ The four marked ⭐ are the ones that will break your board if they are wrong.
 3. Open **File → Examples → OpenMote → 01_HelloOpenMote** and hit Upload.
 4. Open the Serial Monitor at **115200 baud**.
 
+> **The port will be labelled "ESP32 Family Device", not "OpenMote".** That is
+> expected, and installing the board definition does not change it. The
+> ESP32-S3's native USB reports `303A:1001`, which every ESP32-S3 board reports,
+> so the IDE cannot tell them apart. Pick it anyway.
+
 If the upload hangs or the port never appears, see
 [FLASHING.md](FLASHING.md) — you can put the board into download mode by hand.
+The controller buzzing while it sits in download mode is normal; tap the Reset
+button on the back once the flash finishes and it stops.
 
 ---
 
-## Quick reference: the settings that matter
+## Quick reference: the manual settings
+
+Only needed if you did **not** install the board definition. With
+*OpenMote Gen 3.3* selected, all of these are already set.
 
 ```
 Board:              ESP32S3 Dev Module
