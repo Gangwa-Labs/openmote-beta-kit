@@ -57,20 +57,44 @@ Everything is echoed over USB CDC at 115200 — state changes, captured codes,
 and a full table of bindings on boot and after every save. Raw frames are dumped
 in full when learned, so you can reconstruct a mapping by hand if you need to.
 
-**The firmware never depends on a monitor being attached.** Every message goes
-through a `logf()` helper that returns immediately when the USB CDC port is not
-open:
+**The firmware never depends on a monitor being attached**, and runs identically
+with nothing plugged in.
+
+### Do not gate logging on `if (Serial)`
+
+This is worth knowing before you write your own firmware, because the obvious
+defensive idiom is actively wrong on this board:
 
 ```cpp
 static void logf(const char *fmt, ...) {
-    if (!Serial) return;
+    if (!Serial) return;      // <-- do not do this
     ...
 }
 ```
 
-Without that guard, writes to an unread port stall once the driver's buffer
-fills, which would drag out the main loop and make the buttons feel sticky. It
-is worth copying into any OpenMote firmware meant to run standalone.
+With **USB Mode = Hardware CDC and JTAG** — the OpenMote default — `Serial` is
+an `HWCDC`, and `HWCDC::isCDC_Connected()` returns **false on its first call by
+design**. It arms the IN_EMPTY interrupt and flushes the TX FIFO, then reports
+`true` only on a *later* call, once the host has actually drained data. Gating
+on it suppresses the very writes that would make it true, so the port stays
+silent forever — with or without a monitor open.
+
+The guard is unnecessary anyway. `HWCDC::write()` already checks the connection
+and, when nothing is listening, discards through a ring-buffer FIFO policy
+instead of blocking, with every path bounded by a 100 ms tx timeout. Writing to
+an unread port does not stall the loop.
+
+If you want the startup banner to survive USB re-enumeration, wait for the port
+with a timeout rather than gating every write:
+
+```cpp
+Serial.begin(115200);
+uint32_t t0 = millis();
+while (!Serial && millis() - t0 < 2000) delay(10);
+```
+
+That gives a monitor time to attach — native USB needs 1-2 s after a reset —
+while never holding up a board running standalone.
 
 ## What it can and cannot capture
 

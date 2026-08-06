@@ -33,16 +33,34 @@ Documents/Arduino/hardware/openmote/esp32/boards.txt
 not `hardware/boards.txt` and not `hardware/openmote/boards.txt`. If the board
 does not appear in the menu, this is almost always why.
 
-## What it sets for you
+## What it pre-selects
 
-| | |
+**Every menu the ESP32S3 Dev Module offers is still there and still
+changeable** — all seventeen of them. The board definition only changes which
+option each one *starts* on:
+
+| Menu | Pre-selected |
 |---|---|
-| Flash | 16 MB, QIO at 80 MHz |
-| PSRAM | OPI (Octal) — `memory_type` resolves to `qio_opi` |
-| USB CDC on boot | Enabled |
-| USB mode | Hardware CDC and JTAG |
-| Partition scheme | 16M Flash (3MB APP/9.9MB FATFS) |
-| CPU | 240 MHz |
+| Flash Size | 16MB (128Mb) |
+| Flash Mode | QIO 80MHz — `memory_type` resolves to `qio_opi` |
+| PSRAM | OPI PSRAM (Octal) |
+| USB CDC On Boot | Enabled |
+| USB Mode | Hardware CDC and JTAG |
+| Partition Scheme | 16M Flash (3MB APP/9.9MB FATFS) |
+| CPU Frequency | 240 MHz |
+
+Nothing is hidden or removed. If a default turns out to be wrong for what you
+are doing, change it in Tools exactly as you would on the Dev Module.
+
+`boards.txt` is **generated** from the core's own `esp32s3` entry by
+[`gen_boards.py`](gen_boards.py), so no property can be lost in transcription.
+Regenerate it against a newer core with:
+
+```
+python hardware/gen_boards.py \
+  <Arduino15>/packages/esp32/hardware/esp32/<version>/boards.txt \
+  hardware/openmote/esp32/boards.txt
+```
 
 The flash/PSRAM pair is the one that matters most. The N16R8 module is 16 MB
 **quad** flash plus 8 MB **octal** PSRAM, so the only correct combination is
@@ -50,14 +68,34 @@ The flash/PSRAM pair is the one that matters most. The N16R8 module is 16 MB
 and then also pick "OPI 80MHz" for the flash mode, which yields `opi_opi` and a
 board that will not boot. Here that combination is not offered at all.
 
-## Menus that remain
+## The one menu you will need to change
 
-Only the things that genuinely vary per sketch:
+**USB Mode** — switch to *USB-OTG (TinyUSB)* for HID sketches such as the
+AirMouse example, which will not compile otherwise. Set it back to
+*Hardware CDC and JTAG* for everything else.
 
-- **USB Mode** — switch to *USB-OTG (TinyUSB)* for HID sketches such as the
-  AirMouse example. Everything else wants the default.
-- **Partition Scheme**, **Upload Speed**, **Core Debug Level**,
-  **Erase All Flash Before Sketch Upload**.
+## Never set build.extra_flags in boards.txt
+
+Worth stating plainly, because it cost real debugging time. In the esp32
+`platform.txt`, `build.extra_flags` is a **composite**:
+
+```
+build.extra_flags=-DARDUINO_HOST_OS="..." -DESP32=ESP32 \
+  -DCORE_DEBUG_LEVEL={build.code_debug} {build.defines} \
+  {build.extra_flags.{build.mcu}} ...
+```
+
+and `build.extra_flags.esp32s3` is what supplies `-DARDUINO_USB_MODE` and
+`-DARDUINO_USB_CDC_ON_BOOT`. Overriding `build.extra_flags` from `boards.txt`
+replaces the whole composite and silently drops those defines.
+
+The failure mode is nasty: **the sketch still compiles**. But with
+`ARDUINO_USB_CDC_ON_BOOT` gone, `Serial` falls back to UART0 — which on this
+board is GPIO43/44, the D-pad — so nothing ever reaches the USB port and the
+Serial Monitor stays blank forever.
+
+Board-specific defines belong in **`build.defines`**, which the composite
+includes. The core's own `esp32s3` entry sets `build.extra_flags` nowhere.
 
 ## Verified
 
