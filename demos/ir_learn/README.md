@@ -108,3 +108,17 @@ pio device monitor
 
 Requires the whole repo checked out: `platformio.ini` refers to the shared board
 definition in `../../boards` and the library at the repo root.
+
+### Arduino IDE
+
+The same firmware ships as a sketch in the library repo at
+[`examples/demos/IRLearn`](https://github.com/Gangwa-Labs/OpenMote/tree/main/examples/demos/IRLearn),
+so once the OpenMote library is installed it opens straight from
+**File → Examples → OpenMote → demos → IRLearn**. Use the standard board
+settings from [ARDUINO_IDE_SETUP.md](../../docs/ARDUINO_IDE_SETUP.md).
+
+The custom `partitions.csv` here is a PlatformIO thing and has no Arduino
+equivalent to set — any Partition Scheme with a normal NVS partition holds the
+codes, including the stock **16M Flash (3MB APP/9.9MB FATFS)**. Do keep
+**Erase All Flash Before Sketch Upload** disabled, though: it wipes NVS, and
+with it every learned code.

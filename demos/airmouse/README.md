@@ -64,7 +64,7 @@ board definition in `../../boards`.
 through its own `include/pin_definitions.h`. It is shipped as-is because it is
 known-good on real hardware; rewriting proven firmware to route through a new
 library is a good way to introduce bugs. The pin numbers agree with
-[`OpenMotePins.h`](../../src/OpenMotePins.h) — they are just spelled
+[`OpenMotePins.h`](https://github.com/Gangwa-Labs/OpenMote/blob/main/src/OpenMotePins.h) — they are just spelled
 differently.
 
 **Calibration is stored in NVS** and survives power cycles and re-flashes of the

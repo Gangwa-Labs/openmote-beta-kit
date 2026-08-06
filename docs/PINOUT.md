@@ -1,7 +1,7 @@
 # OpenMote Gen 3.3 — Pin Definitions
 
 Every GPIO on the board. The machine-readable version of this table is
-[`src/OpenMotePins.h`](../src/OpenMotePins.h) — if the two ever disagree, the
+[`OpenMotePins.h`](https://github.com/Gangwa-Labs/OpenMote/blob/main/src/OpenMotePins.h) — if the two ever disagree, the
 header is what the code actually uses.
 
 **MCU:** ESP32-S3-WROOM-1-N16R8 — 16 MB flash, 8 MB **Octal** PSRAM.

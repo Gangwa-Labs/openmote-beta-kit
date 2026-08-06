@@ -26,8 +26,9 @@ Down. Switch to USB CDC.
 
 ## Upload hangs at "Connecting…"
 
-See [FLASHING.md](FLASHING.md). Short version: hold the **Power button**, plug in
-USB, release, then upload with `--before no_reset`.
+Put the board into download mode by hand, then upload. Short version: hold the
+**Power button**, tap **Reset**, release. See
+[FLASHING.md](FLASHING.md#entering-download-mode-by-hand).
 
 ## PSRAM not detected / `ps_malloc()` returns null
 

@@ -22,10 +22,16 @@ Total setup time: about five minutes.
 
 ## 2. Install the OpenMote library
 
+The library lives in its own repository:
+**[github.com/Gangwa-Labs/OpenMote](https://github.com/Gangwa-Labs/OpenMote)**.
+It is not part of this kit — this repo carries the documentation, demos and
+board definitions that go around it.
+
 Either:
 
-- **Sketch → Include Library → Add .ZIP Library…** and pick the beta kit ZIP; or
-- copy this whole folder into your Arduino `libraries/` directory:
+- **Code → Download ZIP** on that repo, then **Sketch → Include Library →
+  Add .ZIP Library…** and select the downloaded file; or
+- clone it into your Arduino `libraries/` directory:
   - Windows — `Documents\Arduino\libraries\OpenMote`
   - macOS — `~/Documents/Arduino/libraries/OpenMote`
   - Linux — `~/Arduino/libraries/OpenMote`
@@ -83,8 +89,7 @@ The four marked ⭐ are the ones that will break your board if they are wrong.
 4. Open the Serial Monitor at **115200 baud**.
 
 If the upload hangs or the port never appears, see
-[FLASHING.md](FLASHING.md) — there is a known quirk on Windows and a reliable
-manual recovery.
+[FLASHING.md](FLASHING.md) — you can put the board into download mode by hand.
 
 ---
 

@@ -51,7 +51,7 @@ board_build.filesystem = littlefs
 build_flags = -std=gnu++17
 build_unflags = -std=gnu++11
 
-lib_deps = https://github.com/Gangwa-Labs/openmote-beta-kit.git
+lib_deps = https://github.com/Gangwa-Labs/OpenMote.git
 ```
 
 ### About that platform line

@@ -1,8 +1,12 @@
 # OpenMote Beta Kit
 
-Everything you need to program an **OpenMote Gen 3.3** board: a library for the
-hardware, the full pin map and component list, and board definitions for the
-Arduino IDE and PlatformIO.
+Everything you need to program an **OpenMote Gen 3.3** board: the full pin map
+and component list, demo firmware, and board definitions for the Arduino IDE and
+PlatformIO.
+
+The library itself lives in its own repository —
+**[Gangwa-Labs/OpenMote](https://github.com/Gangwa-Labs/OpenMote)** — so that
+Arduino Library Manager releases carry the library alone.
 
 The OpenMote is an ESP32-S3 handheld controller — twelve buttons, four player
 LEDs, a rumble motor, a 6-axis IMU, a speaker, a microphone, infrared in and
@@ -15,7 +19,9 @@ out, and a LiPo battery.
 **Arduino IDE** — five minutes, nothing custom to install.
 
 1. Add the ESP32 boards URL and install **esp32 by Espressif Systems**.
-2. **Sketch → Include Library → Add .ZIP Library…** and select this kit.
+2. Get the library: **Code → Download ZIP** on
+   [Gangwa-Labs/OpenMote](https://github.com/Gangwa-Labs/OpenMote), then
+   **Sketch → Include Library → Add .ZIP Library…**
 3. **Tools → Board → ESP32S3 Dev Module**, then set:
    ```
    PSRAM:            OPI PSRAM          <-- must be OPI
@@ -91,11 +97,11 @@ working implementations to copy.
 | | |
 |---|---|
 | **[PINOUT.md](docs/PINOUT.md)** | Every GPIO, what it does, and the four that will bite you |
-| **[COMPONENTS.md](docs/COMPONENTS.md)** | Full BOM with LCSC part numbers and key specs |
+| **[COMPONENTS.md](docs/COMPONENTS.md)** | Full BOM and key specs |
 | **[API.md](docs/API.md)** | Complete library reference |
 | **[ARDUINO_IDE_SETUP.md](docs/ARDUINO_IDE_SETUP.md)** | Board settings, and why there's no custom board package |
 | **[PLATFORMIO_SETUP.md](docs/PLATFORMIO_SETUP.md)** | Using the `openmote_gen3` board definition |
-| **[FLASHING.md](docs/FLASHING.md)** | Manual download mode, the Windows upload hang, recovery |
+| **[FLASHING.md](docs/FLASHING.md)** | Manual download mode, and what isn't a flashing problem |
 | **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** | Symptom-first fixes |
 | **[demos/README.md](demos/README.md)** | The four demo applications |
 
@@ -103,7 +109,8 @@ working implementations to copy.
 
 ## Examples
 
-Under **File → Examples → OpenMote** once installed.
+Shipped with the [library](https://github.com/Gangwa-Labs/OpenMote), under
+**File → Examples → OpenMote** once installed.
 
 | | |
 |---|---|
@@ -134,11 +141,6 @@ PlatformIO project under [`demos/`](demos/).
 
 ```
 openmote-beta-kit/
-├── src/                       the library
-│   ├── OpenMote.h/.cpp        buttons, LEDs, rumble, battery, sensors
-│   ├── OpenMoteIR.h/.cpp      infrared send/receive
-│   └── OpenMotePins.h         pin map — usable on its own
-├── examples/                  six small teaching sketches
 ├── demos/                     four complete applications
 │   ├── ir_learn/              learning universal remote (uses the library)
 │   ├── airmouse/              absolute-pointing USB HID mouse
@@ -150,6 +152,10 @@ openmote-beta-kit/
 └── templates/
     └── platformio-project/    ready-to-build starter project
 ```
+
+The library — `OpenMote.h/.cpp`, `OpenMoteIR.h/.cpp`, `OpenMotePins.h` and the
+teaching sketches — is at
+[Gangwa-Labs/OpenMote](https://github.com/Gangwa-Labs/OpenMote).
 
 ---
 

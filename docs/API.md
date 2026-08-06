@@ -229,7 +229,7 @@ numbers (`OM_PIN_IR_RX` = 1, `OM_PIN_IR_TX` = 41).
 ## Pin constants
 
 Every GPIO is available as `OM_PIN_*` — see
-[`src/OpenMotePins.h`](../src/OpenMotePins.h) and [PINOUT.md](PINOUT.md).
+[`OpenMotePins.h`](https://github.com/Gangwa-Labs/OpenMote/blob/main/src/OpenMotePins.h) and [PINOUT.md](PINOUT.md).
 
 ```cpp
 #include <OpenMotePins.h>     // just the numbers, no driver code

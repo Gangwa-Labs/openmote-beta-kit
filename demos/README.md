@@ -1,8 +1,8 @@
 # OpenMote demos
 
-Four complete, flashable applications. Unlike the small teaching sketches in
-[`examples/`](../examples/), each of these is a full PlatformIO project you can
-build and use as-is.
+Four complete, flashable applications. Unlike the small teaching sketches in the
+[library's `examples/`](https://github.com/Gangwa-Labs/OpenMote/tree/main/examples),
+each of these is a full PlatformIO project you can build and use as-is.
 
 | Demo | What it does | Build with | Uses the library |
 |---|---|---|---|
@@ -96,7 +96,7 @@ own `pin_definitions.h`.
 They are shipped **as-is on purpose**: each is known-good on real boards, and
 rewriting proven firmware to route through a new library is a good way to
 introduce bugs into the one thing you were confident about. Their pin numbers
-agree with [`OpenMotePins.h`](../src/OpenMotePins.h) — they just spell them
+agree with [`OpenMotePins.h`](https://github.com/Gangwa-Labs/OpenMote/blob/main/src/OpenMotePins.h) — they just spell them
 differently.
 
 For anything new, use the library. `ir_learn` shows what that looks like.
