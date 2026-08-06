@@ -111,11 +111,22 @@ definition in `../../boards` and the library at the repo root.
 
 ### Arduino IDE
 
-The same firmware ships as a sketch in the library repo at
+This firmware is also available as a sketch in the library repo at
 [`examples/demos/IRLearn`](https://github.com/Gangwa-Labs/OpenMote/tree/main/examples/demos/IRLearn),
 so once the OpenMote library is installed it opens straight from
 **File → Examples → OpenMote → demos → IRLearn**. Use the standard board
 settings from [ARDUINO_IDE_SETUP.md](../../docs/ARDUINO_IDE_SETUP.md).
+
+**The two are not identical.** The sketch adds **idle deep sleep**: after ten
+minutes with no button activity it powers down, waking on Home, 1, 2, +, - or
+D-pad Right. Those six are the only buttons that can wake it — A, B, Up, Down
+and Left are on GPIOs above 21 and are not RTC-capable, so they cannot be wake
+sources. Power (GPIO0) could be, but is deliberately excluded: it is the BOOT
+strapping pin, and holding it across the reset that ends deep sleep is the same
+gesture that enters download mode.
+
+The PlatformIO project here has no sleep behaviour and is the reference version:
+it is the one that has been run on real boards.
 
 The custom `partitions.csv` here is a PlatformIO thing and has no Arduino
 equivalent to set — any Partition Scheme with a normal NVS partition holds the
