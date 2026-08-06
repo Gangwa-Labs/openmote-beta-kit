@@ -22,10 +22,15 @@ out, and a LiPo battery.
 2. Get the library: **Code → Download ZIP** on
    [Gangwa-Labs/OpenMote](https://github.com/Gangwa-Labs/OpenMote), then
    **Sketch → Include Library → Add .ZIP Library…**
-3. **Tools → Board → ESP32S3 Dev Module**, then set:
+3. Copy [`hardware/openmote`](hardware/) into `Documents\Arduino\hardware\`,
+   restart the IDE, then **Tools → Board → OpenMote → OpenMote Gen 3.3**. Every
+   setting is baked in — see [hardware/README.md](hardware/README.md).
+
+   Prefer not to install it? Use **ESP32S3 Dev Module** and set these by hand:
    ```
    PSRAM:            OPI PSRAM          <-- must be OPI
    Flash Size:       16MB (128Mb)       <-- must be 16MB
+   Flash Mode:       QIO 80MHz          <-- NOT "OPI 80MHz", it will not boot
    USB CDC On Boot:  Enabled            <-- or you get no serial output
    USB Mode:         Hardware CDC and JTAG
    Partition Scheme: 16M Flash (3MB APP/9.9MB FATFS)
@@ -99,7 +104,8 @@ working implementations to copy.
 | **[PINOUT.md](docs/PINOUT.md)** | Every GPIO, what it does, and the four that will bite you |
 | **[COMPONENTS.md](docs/COMPONENTS.md)** | Full BOM and key specs |
 | **[API.md](docs/API.md)** | Complete library reference |
-| **[ARDUINO_IDE_SETUP.md](docs/ARDUINO_IDE_SETUP.md)** | Board settings, and why there's no custom board package |
+| **[ARDUINO_IDE_SETUP.md](docs/ARDUINO_IDE_SETUP.md)** | Board settings, with or without the board definition |
+| **[hardware/README.md](hardware/README.md)** | Installing the Arduino board definition, and how to maintain it |
 | **[PLATFORMIO_SETUP.md](docs/PLATFORMIO_SETUP.md)** | Using the `openmote_gen3` board definition |
 | **[FLASHING.md](docs/FLASHING.md)** | Manual download mode, and what isn't a flashing problem |
 | **[TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** | Symptom-first fixes |
@@ -147,6 +153,9 @@ openmote-beta-kit/
 │   ├── tv_remote/             BLE remote for Fire TV + IR power
 │   └── usb_microphone/        USB audio capture device (ESP-IDF)
 ├── docs/                      pinout, components, setup, troubleshooting
+├── hardware/
+│   └── openmote/esp32/        Arduino IDE board definition — copy to
+│                              Documents/Arduino/hardware/
 ├── boards/
 │   └── openmote_gen3.json     PlatformIO board definition
 └── templates/

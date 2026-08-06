@@ -1,0 +1,121 @@
+# ---------------------------------------------------------------------------
+# OpenMote Gen 3.3 — Arduino board definition
+#
+# This is not a whole platform. It reuses the core, toolchain and build recipes
+# from "esp32 by Espressif Systems" (install that through Boards Manager first)
+# and only supplies this board's own defaults and pin variant.
+#
+# The point of it: every setting that the manual ESP32S3 Dev Module recipe asks
+# you to get right is baked in below. In particular the flash/PSRAM combination,
+# which is the one that silently stops the board booting if you pick "OPI 80MHz"
+# by mistake.
+#
+# Verified against esp32 core 3.3.7.
+# ---------------------------------------------------------------------------
+
+menu.USBMode=USB Mode
+menu.PartitionScheme=Partition Scheme
+menu.UploadSpeed=Upload Speed
+menu.DebugLevel=Core Debug Level
+menu.EraseFlash=Erase All Flash Before Sketch Upload
+
+openmote_gen3.name=OpenMote Gen 3.3
+
+# -- Tools, borrowed from the esp32 platform ------------------------------
+openmote_gen3.bootloader.tool=esp32:esptool_py
+openmote_gen3.bootloader.tool.default=esp32:esptool_py
+openmote_gen3.upload.tool=esp32:esptool_py
+openmote_gen3.upload.tool.default=esp32:esptool_py
+openmote_gen3.upload.tool.network=esp32:esp_ota
+
+openmote_gen3.upload.maximum_size=3145728
+openmote_gen3.upload.maximum_data_size=327680
+openmote_gen3.upload.flags=
+openmote_gen3.upload.extra_flags=
+openmote_gen3.upload.use_1200bps_touch=false
+openmote_gen3.upload.wait_for_upload_port=false
+
+openmote_gen3.serial.disableDTR=false
+openmote_gen3.serial.disableRTS=false
+
+# -- Chip / core ----------------------------------------------------------
+openmote_gen3.build.tarch=xtensa
+openmote_gen3.build.bootloader_addr=0x0
+openmote_gen3.build.target=esp32s3
+openmote_gen3.build.mcu=esp32s3
+openmote_gen3.build.core=esp32:esp32
+openmote_gen3.build.variant=openmote_gen3
+openmote_gen3.build.board=OPENMOTE_GEN3
+openmote_gen3.build.f_cpu=240000000L
+
+# -- The settings that used to be a checklist -----------------------------
+# ESP32-S3-WROOM-1-N16R8: 16 MB QUAD flash + 8 MB OCTAL PSRAM.
+# memory_type resolves to {boot}_{psram_type} = qio_opi, which is the only
+# correct combination for this module. Selecting "OPI 80MHz" as the flash mode
+# in the generic Dev Module recipe yields opi_opi and the board will not boot;
+# here it simply is not offered.
+openmote_gen3.build.flash_size=16MB
+openmote_gen3.build.flash_freq=80m
+openmote_gen3.build.flash_mode=dio
+openmote_gen3.build.boot=qio
+openmote_gen3.build.boot_freq=80m
+openmote_gen3.build.psram_type=opi
+openmote_gen3.build.memory_type={build.boot}_{build.psram_type}
+openmote_gen3.build.extra_flags=-DBOARD_HAS_PSRAM
+
+# USB CDC on boot is mandatory, not a preference: GPIO43/44 (UART0) are wired
+# to D-pad Up and Down, so USB CDC is the only usable console on this board.
+openmote_gen3.build.cdc_on_boot=1
+openmote_gen3.build.msc_on_boot=0
+openmote_gen3.build.dfu_on_boot=0
+openmote_gen3.build.usb_mode=1
+
+openmote_gen3.build.partitions=app3M_fat9M_16MB
+openmote_gen3.build.defines=
+openmote_gen3.build.loop_core=
+openmote_gen3.build.event_core=
+openmote_gen3.build.code_debug=0
+
+# -- Menus, for the things that genuinely vary ----------------------------
+
+# USB-OTG is needed for HID sketches (see the AirMouse example). Everything
+# else wants Hardware CDC and JTAG, which is the default.
+openmote_gen3.menu.USBMode.hwcdc=Hardware CDC and JTAG
+openmote_gen3.menu.USBMode.hwcdc.build.usb_mode=1
+openmote_gen3.menu.USBMode.default=USB-OTG (TinyUSB)
+openmote_gen3.menu.USBMode.default.build.usb_mode=0
+
+openmote_gen3.menu.PartitionScheme.app3M_fat9M_16MB=16M Flash (3MB APP/9.9MB FATFS)
+openmote_gen3.menu.PartitionScheme.app3M_fat9M_16MB.build.partitions=app3M_fat9M_16MB
+openmote_gen3.menu.PartitionScheme.app3M_fat9M_16MB.upload.maximum_size=3145728
+openmote_gen3.menu.PartitionScheme.fatflash=16M Flash (2MB APP/12.5MB FATFS)
+openmote_gen3.menu.PartitionScheme.fatflash.build.partitions=ffat
+openmote_gen3.menu.PartitionScheme.fatflash.upload.maximum_size=2097152
+openmote_gen3.menu.PartitionScheme.huge_app=Huge APP (3MB No OTA/1MB SPIFFS)
+openmote_gen3.menu.PartitionScheme.huge_app.build.partitions=huge_app
+openmote_gen3.menu.PartitionScheme.huge_app.upload.maximum_size=3145728
+
+openmote_gen3.menu.UploadSpeed.921600=921600
+openmote_gen3.menu.UploadSpeed.921600.upload.speed=921600
+openmote_gen3.menu.UploadSpeed.460800=460800
+openmote_gen3.menu.UploadSpeed.460800.upload.speed=460800
+openmote_gen3.menu.UploadSpeed.115200=115200
+openmote_gen3.menu.UploadSpeed.115200.upload.speed=115200
+
+openmote_gen3.menu.DebugLevel.none=None
+openmote_gen3.menu.DebugLevel.none.build.code_debug=0
+openmote_gen3.menu.DebugLevel.error=Error
+openmote_gen3.menu.DebugLevel.error.build.code_debug=1
+openmote_gen3.menu.DebugLevel.warn=Warn
+openmote_gen3.menu.DebugLevel.warn.build.code_debug=2
+openmote_gen3.menu.DebugLevel.info=Info
+openmote_gen3.menu.DebugLevel.info.build.code_debug=3
+openmote_gen3.menu.DebugLevel.debug=Debug
+openmote_gen3.menu.DebugLevel.debug.build.code_debug=4
+openmote_gen3.menu.DebugLevel.verbose=Verbose
+openmote_gen3.menu.DebugLevel.verbose.build.code_debug=5
+
+openmote_gen3.menu.EraseFlash.none=Disabled
+openmote_gen3.menu.EraseFlash.none.upload.erase_cmd=
+openmote_gen3.menu.EraseFlash.all=Enabled
+openmote_gen3.menu.EraseFlash.all.upload.erase_cmd=-e

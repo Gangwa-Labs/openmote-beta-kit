@@ -1,11 +1,15 @@
 # Programming the OpenMote from the Arduino IDE
 
-There is **no custom board package to install**. The OpenMote is an
-ESP32-S3-WROOM-1-N16R8 module, and the stock **ESP32S3 Dev Module** entry drives
-it perfectly once a handful of settings are right. Reasons for doing it this way
-are at the [bottom of this page](#why-not-a-custom-board-package).
+Two ways to do this:
 
-Total setup time: about five minutes.
+- **[Install the board definition](#3-select-the-board-and-settings)** — adds
+  *OpenMote Gen 3.3* to the board list with every setting already correct. One
+  extra folder to copy, then nothing to configure. **Recommended.**
+- **Use the stock ESP32S3 Dev Module** and set eight menu items by hand. Nothing
+  extra to install, but two of those settings will stop the board booting if you
+  get them wrong. The full table is [further down](#manual-setup-without-the-board-definition).
+
+Total setup time: about five minutes either way.
 
 ---
 
@@ -40,6 +44,28 @@ Restart the IDE. The examples appear under
 **File → Examples → OpenMote**.
 
 ## 3. Select the board and settings
+
+### Recommended: install the board definition
+
+Copy the `openmote` folder from [`hardware/`](../hardware/) into your
+sketchbook's `hardware` folder:
+
+- Windows — `Documents\Arduino\hardware\openmote`
+- macOS — `~/Documents/Arduino/hardware/openmote`
+- Linux — `~/Arduino/hardware/openmote`
+
+Restart the IDE, then **Tools → Board → OpenMote → OpenMote Gen 3.3**.
+
+That is the whole configuration step — flash size, PSRAM mode, USB CDC and the
+partition scheme are all baked in. Switch **USB Mode** to *USB-OTG (TinyUSB)*
+only when building a HID sketch such as the AirMouse example.
+
+The folder depth matters: you should end up with
+`Documents\Arduino\hardware\openmote\esp32\boards.txt`. If the board never
+appears in the menu, that is nearly always the reason. See
+[hardware/README.md](../hardware/README.md).
+
+### Manual setup, without the board definition
 
 **Tools → Board → esp32 → ESP32S3 Dev Module**, then match this table.
 The four marked ⭐ are the ones that will break your board if they are wrong.
@@ -108,10 +134,14 @@ Upload Speed:       921600
 
 ---
 
-## Why not a custom board package?
+## Why not a Boards Manager package?
 
-A proper `boards.txt` package — the kind where "OpenMote Gen 3.3" shows up in the
-board list — is genuinely nice, but it costs more than it gives back right now:
+There **is** a board definition now — [`hardware/`](../hardware/), hand-copied
+into your sketchbook. What does not exist is a *Boards Manager* package: the kind
+you install by pasting a URL into Preferences, that appears in Boards Manager and
+updates itself.
+
+That is the part which costs more than it gives back right now:
 
 - It has to be **hosted**. Boards Manager installs from a
   `package_openmote_index.json` served over HTTPS, pointing at a versioned,
@@ -126,18 +156,20 @@ The settings table above gets a beta board building and flashing in five minutes
 with nothing to install and nothing to maintain. The pin names live in
 `OpenMotePins.h`, which is where they are useful anyway.
 
-**If you do want a real board entry later**, the pieces are:
+**Steps 1 to 3 are already done** — `boards.txt`, the `openmote_gen3` variant and
+the `platform.txt` overrides all live in [`hardware/`](../hardware/) and are
+verified against esp32 core 3.3.7. Only step 4 remains:
 
-1. `hardware/openmote/esp32/boards.txt` — an entry cloned from the core's
-   `esp32s3` section with the defaults baked in (`build.flash_size=16MB`,
-   `build.memory_type=qio_opi`, `build.psram_type=opi`, `build.extra_flags`
-   carrying `-DARDUINO_USB_CDC_ON_BOOT=1`).
-2. `hardware/openmote/esp32/variants/openmote_gen3/pins_arduino.h` — the same
-   numbers as `OpenMotePins.h`, plus the `LED_BUILTIN`, `SDA` and `SCL`
-   definitions the Arduino API expects.
-3. `platform.txt` inherited from the esp32 core via `core=esp32:esp32`.
-4. A `package_openmote_index.json` and a tagged GitHub release for Boards Manager.
+- A `package_openmote_index.json` and a tagged GitHub release, so Boards Manager
+  can install and update it from a URL.
 
-The [PlatformIO board definition](../boards/openmote_gen3.json) in this repo
-already encodes step 1's settings, so it is a good starting point for the
-`boards.txt` values.
+That is a release process rather than a file, which is why the folder is
+hand-copied for the beta.
+
+**The better long-term option** is neither: submit the board to
+[espressif/arduino-esp32](https://github.com/espressif/arduino-esp32) so it ships
+inside the standard esp32 core. Hundreds of third-party boards are carried that
+way. Testers would then install the esp32 core and pick *OpenMote Gen 3.3* with
+nothing else to copy, the `{runtime.platform.path}` workarounds in
+[hardware/README.md](../hardware/README.md) would become unnecessary, and it
+would not need re-testing on every core release.

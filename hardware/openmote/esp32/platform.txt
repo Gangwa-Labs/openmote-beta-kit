@@ -1,0 +1,43 @@
+# ---------------------------------------------------------------------------
+# OpenMote board support
+#
+# This is not a whole platform. Every board in boards.txt references the esp32
+# platform's core and tools (build.core=esp32:esp32, upload.tool=esp32:esptool_py),
+# so the compile and upload recipes come from there.
+#
+# The overrides below exist for one reason. When a board borrows a core from
+# another platform, {runtime.platform.path} still points at THIS folder, not at
+# the esp32 platform. Any esp32 recipe built on that variable therefore looks for
+# its helper files inside the OpenMote package and fails.
+#
+# {build.core.path} does point into the referenced platform
+# (<esp32>/cores/esp32), so "{build.core.path}/../.." is a reliable handle on the
+# esp32 platform root. Each override below is the esp32 3.3.7 recipe with that
+# substitution and nothing else changed.
+#
+# MAINTENANCE: these four are copies of upstream recipes. If Espressif changes
+# them in a future core release, the copies here go stale. Re-check them when
+# bumping the supported core version — see hardware/README.md.
+#
+# Verified against esp32 core 3.3.7.
+# ---------------------------------------------------------------------------
+name=OpenMote
+version=1.0.0
+
+# -- gen_esp32part: turns partitions.csv into partitions.bin -----------------
+tools.gen_esp32part.cmd=python3 "{build.core.path}/../../tools/gen_esp32part.py"
+tools.gen_esp32part.cmd.windows="{build.core.path}\..\..\tools\gen_esp32part.exe"
+
+# -- Copy the selected partition table into the build dir --------------------
+recipe.hooks.prebuild.3.pattern=/usr/bin/env bash -c "[ -f "{build.path}"/partitions.csv ] || cp "{build.core.path}"/../../tools/partitions/{build.partitions}.csv "{build.path}"/partitions.csv"
+recipe.hooks.prebuild.3.pattern.windows=cmd /c if not exist "{build.path}\partitions.csv" COPY "{build.core.path}\..\..\tools\partitions\{build.partitions}.csv" "{build.path}\partitions.csv"
+
+# -- Export boot_app0.bin alongside the sketch binaries ----------------------
+recipe.hooks.savehex.postsavehex.4.pattern=/usr/bin/env bash -c "{recipe.hooks.savehex.fqbn_to_dir} && cp -f '{build.core.path}/../../tools/partitions/boot_app0.bin' '{sketch_path}/build/'$FQBN_DIR'/boot_app0.bin' 2>/dev/null || true"
+recipe.hooks.savehex.postsavehex.4.pattern.windows=powershell -Command "{recipe.hooks.savehex.fqbn_to_dir}; Copy-Item -Force -ErrorAction SilentlyContinue '{build.core.path}\..\..\tools\partitions\boot_app0.bin' ($dest + '\boot_app0.bin')"
+
+# -- merge-bin: the single-image build also embeds boot_app0.bin -------------
+recipe.hooks.objcopy.postobjcopy.3.pattern_args=--chip {build.mcu} merge-bin -o "{build.path}/{build.project_name}.merged.bin" --pad-to-size {build.flash_size} --flash-mode keep --flash-freq keep --flash-size keep {build.bootloader_addr} "{build.path}/{build.project_name}.bootloader.bin" 0x8000 "{build.path}/{build.project_name}.partitions.bin" 0xe000 "{build.core.path}/../../tools/partitions/boot_app0.bin" 0x10000 "{build.path}/{build.project_name}.bin"
+
+# -- Upload: boot_app0.bin lives at 0xe000 -----------------------------------
+tools.esptool_py.upload.pattern_args=--chip {build.mcu} --port "{serial.port}" --baud {upload.speed} {upload.flags} --before default-reset --after hard-reset write-flash {upload.erase_cmd} -z --flash-mode keep --flash-freq keep --flash-size keep {build.bootloader_addr} "{build.path}/{build.project_name}.bootloader.bin" 0x8000 "{build.path}/{build.project_name}.partitions.bin" 0xe000 "{build.core.path}/../../tools/partitions/boot_app0.bin" 0x10000 "{build.path}/{build.project_name}.bin" {upload.extra_flags}
