@@ -1,5 +1,9 @@
 # OpenMote Beta Kit
 
+> **⚠ Early tester hardware.** This repository is for early testers of the
+> OpenMote Gen 3.3 beta boards. These boards have known bugs, which will be
+> fixed in the production run.
+
 Everything you need to program an **OpenMote Gen 3.3** board: the full pin map
 and component list, demo firmware, and board definitions for the Arduino IDE and
 PlatformIO.
